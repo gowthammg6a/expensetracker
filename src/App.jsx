@@ -122,7 +122,7 @@ function Sidebar({ activePage, onNavigate }) {
       {/* Logo */}
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">💰</div>
-        <div className="sidebar-logo-name">MG Expense Tracker</div>
+        <div className="sidebar-logo-name">Expense Tracker</div>
         <div className="sidebar-logo-sub">v1.0.9</div>
       </div>
 
@@ -144,7 +144,7 @@ function Sidebar({ activePage, onNavigate }) {
 
       {/* Footer */}
       <div className="sidebar-footer">
-        <div className="sidebar-footer-name">👤 {user?.user_metadata?.full_name || user?.email?.split('@')[0]}</div>
+        <div className="sidebar-footer-name">👤 {(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '').split(' ')[0]}</div>
       </div>
     </aside>
   );
@@ -206,7 +206,7 @@ function Topbar({ activePage }) {
           display: 'flex', alignItems: 'center', gap: 6, background: 'var(--bg)',
           padding: '6px 12px', borderRadius: 20, fontSize: 13, fontWeight: 600, color: 'var(--primary)'
         }}>
-          <span style={{ fontSize: 16 }}>👤</span> {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+          <span style={{ fontSize: 16 }}>👤</span> {(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '').split(' ')[0]}
         </div>
         <span className="topbar-date">{dateStr}</span>
         <div className="topbar-balance">💰 ₹{fmt(totalBalance)}</div>

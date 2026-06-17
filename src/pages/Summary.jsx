@@ -6,7 +6,7 @@ function fmt(n) {
 }
 
 export default function Summary() {
-  const { thisMonthTotal, thisMonthExpenses, monthlyBudget } = useApp();
+  const { thisMonthTotal, thisMonthExpenses, monthlyBudget, isCategoryBudgetEnabled, categoryBudgets, categories } = useApp();
 
   const now = new Date();
   const monthName = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
@@ -61,6 +61,45 @@ export default function Summary() {
             : "You're on track! ✅"}
         </div>
       </div>
+
+      {/* Category Budgets */}
+      {isCategoryBudgetEnabled && Object.values(categoryBudgets).some(b => b > 0) && (
+        <div className="card card-padded" style={{ margin: '12px 16px 0' }}>
+          <div className="analytics-card-title" style={{ marginBottom: 14 }}>Category Budgets</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {categories
+              .filter(cat => categoryBudgets[cat.id] > 0)
+              .map(cat => {
+                const limit = categoryBudgets[cat.id];
+                const catExpenses = thisMonthExpenses.filter(e => e.category === cat.id);
+                const spent = catExpenses.reduce((sum, e) => sum + e.amount, 0);
+                const pct = Math.min((spent / limit) * 100, 100);
+                const isWarn = pct >= 80 && pct < 100;
+                const isDanger = pct >= 100;
+
+                return (
+                  <div key={cat.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 500 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span>{cat.emoji}</span>
+                        <span>{cat.name}</span>
+                      </div>
+                      <div style={{ color: 'var(--text-muted)' }}>
+                        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>₹{fmt(spent)}</span> / ₹{fmt(limit)}
+                      </div>
+                    </div>
+                    <div className="progress-bar-wrap" style={{ height: 6 }}>
+                      <div
+                        className={`progress-bar-fill ${isWarn ? 'warning' : isDanger ? 'danger' : ''}`}
+                        style={{ width: `${pct}%`, height: 6 }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
 
       {/* Weekly Breakdown */}
       <div className="card card-padded" style={{ margin: '12px 16px 0' }}>

@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import AddExpenseModal from '../components/AddExpenseModal';
 import ExpenseDetailModal from '../components/ExpenseDetailModal';
 import SwipeableExpenseItem from '../components/SwipeableExpenseItem';
+import ReceiptScannerModal from '../components/ReceiptScannerModal';
 import { t } from '../i18n/translations';
 
 export default function Expenses() {
@@ -11,6 +12,7 @@ export default function Expenses() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sort, setSort] = useState('newest');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showScanModal, setShowScanModal] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
 
   const filtered = useMemo(() => {
@@ -114,6 +116,24 @@ export default function Expenses() {
         </div>
       )}
 
+      {/* Scanner FAB */}
+      <button 
+        id="fab-scan-receipt-page" 
+        className="fab" 
+        onClick={() => setShowScanModal(true)} 
+        aria-label="Scan Receipt"
+        style={{
+          right: 80,
+          background: 'linear-gradient(135deg, #1a8fa0, #4ecdc4)',
+          boxShadow: '0 4px 15px rgba(78, 205, 196, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <span style={{ fontSize: 20 }}>📷</span>
+      </button>
+
       {/* FAB */}
       <button id="fab-add-expense-page" className="fab" onClick={() => setShowAddModal(true)} aria-label={t(language, 'addExpense')}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -122,6 +142,7 @@ export default function Expenses() {
       </button>
 
       {showAddModal && <AddExpenseModal onClose={() => setShowAddModal(false)} />}
+      {showScanModal && <ReceiptScannerModal onClose={() => setShowScanModal(false)} />}
       {selectedExpense && (
         <ExpenseDetailModal expense={selectedExpense} onClose={() => setSelectedExpense(null)} />
       )}

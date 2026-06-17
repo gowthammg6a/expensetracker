@@ -50,7 +50,7 @@ export default function Auth() {
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>💰</div>
           <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>
-            MG Expense Tracker
+            Expense Tracker
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 5 }}>
             {isLogin ? 'Sign in to your account' : 'Create a new account'}

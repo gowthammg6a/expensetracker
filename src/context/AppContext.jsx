@@ -37,6 +37,8 @@ export function AppProvider({ children }) {
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState('English');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [categoryBudgets, setCategoryBudgets] = useState({});
+  const [isCategoryBudgetEnabled, setIsCategoryBudgetEnabled] = useState(false);
   const [inAppNotifs, setInAppNotifs] = useState([]);
   const [toasts, setToasts] = useState([]);
 
@@ -61,6 +63,8 @@ export function AppProvider({ children }) {
           setDarkMode(data.settings.darkMode ?? false);
           setLanguage(data.settings.language ?? 'English');
           setNotificationsEnabled(data.settings.notificationsEnabled ?? true);
+          setCategoryBudgets(data.settings.categoryBudgets || {});
+          setIsCategoryBudgetEnabled(data.settings.isCategoryBudgetEnabled ?? false);
         }
       } else if (error && error.code === 'PGRST116') {
         // Row doesn't exist, create it
@@ -82,12 +86,12 @@ export function AppProvider({ children }) {
         subscriptions,
         categories,
         monthly_budget: monthlyBudget,
-        settings: { darkMode, language, notificationsEnabled }
+        settings: { darkMode, language, notificationsEnabled, categoryBudgets, isCategoryBudgetEnabled }
       }).eq('id', user.id);
     }, 1000); // Debounce to prevent spamming DB
 
     return () => clearTimeout(updateDB);
-  }, [expenses, accounts, subscriptions, categories, monthlyBudget, darkMode, language, notificationsEnabled, user]);
+  }, [expenses, accounts, subscriptions, categories, monthlyBudget, darkMode, language, notificationsEnabled, categoryBudgets, isCategoryBudgetEnabled, user]);
 
   // Dark mode
   useEffect(() => {
@@ -136,7 +140,13 @@ export function AppProvider({ children }) {
   }, []);
 
   const addExpense = useCallback((expense) => {
-    const newExp = { ...expense, id: Date.now().toString(), date: expense.date || new Date().toISOString() };
+    const activeAcc = accounts.find(a => a.active) || accounts[0];
+    const newExp = { 
+      ...expense, 
+      id: Date.now().toString(), 
+      date: expense.date || new Date().toISOString(),
+      accountId: expense.accountId || activeAcc?.id
+    };
     
     // Check Budget Notification
     if (notificationsEnabled) {
@@ -153,22 +163,40 @@ export function AppProvider({ children }) {
       } else if (previousTotal <= (monthlyBudget * 0.8) && totalSpent > (monthlyBudget * 0.8) && totalSpent <= monthlyBudget) {
         addNotification('Budget Alert 📊', `You've used 80% of your monthly budget. Only ₹${monthlyBudget - totalSpent} remaining.`, '🟡');
       }
+
+      // Check Category Budget Notification
+      if (isCategoryBudgetEnabled && categoryBudgets[newExp.category]) {
+        const catLimit = categoryBudgets[newExp.category];
+        const categoryExpenses = currentMonthExpenses.filter(e => e.category === newExp.category);
+        const previousCatTotal = categoryExpenses.reduce((s, e) => s + e.amount, 0);
+        const totalCatSpent = previousCatTotal + newExp.amount;
+        
+        const catObj = categories.find(c => c.id === newExp.category);
+        const catName = catObj ? `${catObj.emoji} ${catObj.name}` : newExp.category;
+
+        if (previousCatTotal <= catLimit && totalCatSpent > catLimit) {
+          addNotification(`${catName} Budget Exceeded! ⚠️`, `You've crossed your ${catObj?.name || newExp.category} category limit of ₹${catLimit}.`, '🔴');
+        } else if (previousCatTotal <= (catLimit * 0.8) && totalCatSpent > (catLimit * 0.8) && totalCatSpent <= catLimit) {
+          addNotification(`${catName} Budget Alert 📊`, `You've used 80% of your ${catObj?.name || newExp.category} budget. Only ₹${catLimit - totalCatSpent} remaining.`, '🟡');
+        }
+      }
     }
 
     setExpenses(prev => [newExp, ...prev]);
-    // Deduct from active account
-    setAccounts(prev => prev.map(a => a.active ? { ...a, balance: a.balance - expense.amount } : a));
+    // Deduct from target account
+    setAccounts(prev => prev.map(a => a.id === newExp.accountId ? { ...a, balance: a.balance - expense.amount } : a));
     addToast('Expense added! 💸');
-  }, [addToast, expenses, monthlyBudget, notificationsEnabled, addNotification]);
+  }, [addToast, expenses, accounts, monthlyBudget, notificationsEnabled, isCategoryBudgetEnabled, categoryBudgets, categories, addNotification]);
 
   const deleteExpense = useCallback((id) => {
     const exp = expenses.find(e => e.id === id);
     if (exp) {
       setExpenses(prev => prev.filter(e => e.id !== id));
-      setAccounts(prev => prev.map(a => a.active ? { ...a, balance: a.balance + exp.amount } : a));
+      const targetAccId = exp.accountId || (accounts.find(a => a.active) || accounts[0])?.id;
+      setAccounts(prev => prev.map(a => a.id === targetAccId ? { ...a, balance: a.balance + exp.amount } : a));
       addToast('Expense deleted');
     }
-  }, [expenses, addToast]);
+  }, [expenses, accounts, addToast]);
 
   const addMoneyToAccount = useCallback((accountId, amount) => {
     setAccounts(prev => prev.map(a => a.id === accountId ? { ...a, balance: a.balance + amount } : a));
@@ -280,6 +308,7 @@ export function AppProvider({ children }) {
       inAppNotifs, clearNotifications, markNotificationsAsRead, addNotification,
       expenses, accounts, subscriptions, categories, monthlyBudget, setMonthlyBudget,
       darkMode, setDarkMode, language, setLanguage,
+      categoryBudgets, setCategoryBudgets, isCategoryBudgetEnabled, setIsCategoryBudgetEnabled,
       totalBalance, activeAccount, thisMonthExpenses, thisMonthTotal,
       todayExpenses, todayTotal, totalMonthlySubs,
       toasts,

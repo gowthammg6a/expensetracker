@@ -3,12 +3,13 @@ import { useApp } from '../context/AppContext';
 import { t } from '../i18n/translations';
 
 export default function AddExpenseModal({ onClose }) {
-  const { categories, addExpense, language } = useApp();
+  const { categories, accounts, addExpense, language } = useApp();
   const [amount, setAmount] = useState('');
   const [name, setName] = useState('');
   const [category, setCategory] = useState(categories[0]?.id || 'food');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
+  const [accountId, setAccountId] = useState(accounts.find(a => a.active)?.id || accounts[0]?.id || 'current');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,6 +34,7 @@ export default function AddExpenseModal({ onClose }) {
       category,
       date: finalDate,
       note: note.trim(),
+      accountId,
     });
     onClose();
   };
@@ -87,6 +89,19 @@ export default function AddExpenseModal({ onClose }) {
             >
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Deduct From</label>
+            <select
+              id="expense-account"
+              className="form-select"
+              value={accountId}
+              onChange={e => setAccountId(e.target.value)}
+            >
+              {accounts.map(a => (
+                <option key={a.id} value={a.id}>{a.emoji} {a.name} (₹{a.balance.toLocaleString('en-IN')})</option>
               ))}
             </select>
           </div>
