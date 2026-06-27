@@ -44,7 +44,7 @@ export default function ExpenseDetailModal({ expense, onClose }) {
       onClick={e => e.target === e.currentTarget && onClose()}
       role="dialog"
       aria-modal="true"
-      aria-label="Expense Details"
+      aria-label="Expense Details."
     >
       <div className="modal expense-detail-modal">
         <div className="modal-handle" />

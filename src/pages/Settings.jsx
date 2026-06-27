@@ -14,8 +14,6 @@ export default function Settings() {
     addToast,
     categoryBudgets, setCategoryBudgets,
     isCategoryBudgetEnabled, setIsCategoryBudgetEnabled,
-    geminiApiKey, setGeminiApiKey,
-    grokApiKey, setGrokApiKey,
   } = useApp();
 
   const [budgetInput, setBudgetInput] = useState(monthlyBudget.toString());
@@ -23,10 +21,6 @@ export default function Settings() {
   const [newProfileName, setNewProfileName] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [openGuide, setOpenGuide] = useState(null);
-  const [apiKeyInput, setApiKeyInput] = useState(geminiApiKey);
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [grokApiKeyInput, setGrokApiKeyInput] = useState(grokApiKey);
-  const [showGrokKey, setShowGrokKey] = useState(false);
   const importRef = useRef(null);
 
   const handleSaveBudget = () => {
@@ -343,58 +337,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
-      {/* AI Settings */}
-      <div className="settings-section">
-        <div className="settings-section-title">🤖 AI Settings</div>
-        <div className="settings-card" style={{ padding: '16px' }}>
-
-          {/* Gemini – Primary */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: 18 }}>🤖</span>
-            <span style={{ fontWeight: 700, fontSize: 14 }}>Gemini AI (Google) — Receipt Scanning</span>
-            <span style={{ background: '#2b8a3e', color: 'white', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>FREE</span>
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10, lineHeight: 1.6 }}>
-            Gemini AI reads your receipt photo and automatically fills Amount, Name, Category &amp; Date.
-            இது <strong>free</strong> — API key மட்டும் சேர்க்கவும்.
-          </div>
-          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer"
-            style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600, display: 'inline-block', marginBottom: 12, textDecoration: 'none' }}>
-            🔑 Get free API key at aistudio.google.com →
-          </a>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
-            <input
-              className="form-input"
-              type={showApiKey ? 'text' : 'password'}
-              placeholder="AIza..."
-              value={apiKeyInput}
-              onChange={e => setApiKeyInput(e.target.value)}
-              style={{ flex: 1, fontFamily: 'monospace', fontSize: 13 }}
-            />
-            <button type="button" onClick={() => setShowApiKey(!showApiKey)}
-              style={{ padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--border)', background: 'var(--bg)', cursor: 'pointer', fontSize: 16 }}>
-              {showApiKey ? '🙈' : '👁️'}
-            </button>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn-primary" style={{ flex: 1, margin: 0, padding: '10px' }}
-              onClick={() => { setGeminiApiKey(apiKeyInput.trim()); addToast(apiKeyInput.trim() ? '🤖 Gemini API key saved!' : 'Gemini key cleared.'); }}>
-              Save Gemini Key
-            </button>
-            {geminiApiKey && (
-              <button style={{ padding: '10px 14px', borderRadius: 10, border: '1.5px solid var(--danger)', background: 'var(--bg)', color: 'var(--danger)', cursor: 'pointer', fontWeight: 600, fontSize: 13 }}
-                onClick={() => { setApiKeyInput(''); setGeminiApiKey(''); addToast('Gemini key removed.'); }}>
-                Remove
-              </button>
-            )}
-          </div>
-          {geminiApiKey && <div style={{ marginTop: 8, fontSize: 12, color: '#2b8a3e', fontWeight: 700 }}>✅ Gemini AI scanning active</div>}
-
-        </div>
-      </div>
-
-
 
       {/* User Guide */}
 

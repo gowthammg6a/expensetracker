@@ -41,8 +41,7 @@ export function AppProvider({ children }) {
   const [isCategoryBudgetEnabled, setIsCategoryBudgetEnabled] = useState(false);
   const [inAppNotifs, setInAppNotifs] = useState([]);
   const [toasts, setToasts] = useState([]);
-  const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
-  const [grokApiKey, setGrokApiKey] = useState(() => localStorage.getItem('grok_api_key') || '');
+
 
   const [isLoadingData, setIsLoadingData] = useState(true);
   
@@ -320,16 +319,6 @@ export function AppProvider({ children }) {
       addCategory, removeCategory,
       clearAllData, exportData, importData,
       addToast,
-      geminiApiKey,
-      setGeminiApiKey: (key) => {
-        localStorage.setItem('gemini_api_key', key);
-        setGeminiApiKey(key);
-      },
-      grokApiKey,
-      setGrokApiKey: (key) => {
-        localStorage.setItem('grok_api_key', key);
-        setGrokApiKey(key);
-      },
     }}>
       {children}
     </AppContext.Provider>

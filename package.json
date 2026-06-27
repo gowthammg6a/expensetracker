@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,html}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css,html}\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
@@ -20,6 +22,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "prettier": "^3.8.4",
     "vite": "^5.3.1"
   }
 }
