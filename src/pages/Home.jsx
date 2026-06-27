@@ -30,7 +30,6 @@ const CATEGORY_COLORS = {
 export default function Home({ onNavigate }) {
   const { todayTotal, todayExpenses, totalBalance, thisMonthTotal, expenses, categories, language } = useApp();
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showComingSoon, setShowComingSoon] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
 
   const recentExpenses = expenses.slice(0, 6);
@@ -107,35 +106,6 @@ export default function Home({ onNavigate }) {
         </div>
       )}
 
-      {/* Scanner FAB — Coming Soon */}
-      <div style={{ position: 'fixed', bottom: 90, right: 80, zIndex: 100 }}>
-        {showComingSoon && (
-          <div style={{
-            position: 'absolute', bottom: 56, right: 0,
-            background: '#1a1a2e', color: 'white', fontSize: 12, fontWeight: 700,
-            padding: '6px 12px', borderRadius: 8, whiteSpace: 'nowrap',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-          }}>
-            🚀 Coming Soon!
-          </div>
-        )}
-        <button
-          id="fab-scan-receipt"
-          className="fab"
-          onClick={() => setShowComingSoon(v => !v)}
-          onBlur={() => setTimeout(() => setShowComingSoon(false), 200)}
-          aria-label="Scan Receipt — Coming Soon"
-          style={{
-            position: 'static',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            boxShadow: '0 4px 15px rgba(118, 75, 162, 0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            opacity: 0.85, cursor: 'not-allowed'
-          }}
-        >
-          <span style={{ fontSize: 18 }}>📷</span>
-        </button>
-      </div>
 
       {/* FAB */}
       <button id="fab-add-expense" className="fab" onClick={() => setShowAddModal(true)} aria-label={t(language, 'addExpense')}>
